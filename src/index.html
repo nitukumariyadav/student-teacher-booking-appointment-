@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student-Teacher Booking Appointment</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* General Styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header Styles */
+        .navbar {
+            background-color: rgba(0, 0, 0, 0.8);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            transition: background-color 0.3s ease-in-out;
+        }
+
+        .navbar.scroll {
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .navbar .brand {
+            display: flex;
+            align-items: center;
+        }
+
+        .navbar .brand img {
+            height: 40px;
+            margin-right: 10px;
+        }
+
+        .navbar .brand h1 {
+            margin: 0;
+            padding: 0;
+            font-size: 1.5em;
+            color: white;
+        }
+
+        .navbar .nav-links {
+            display: flex;
+            gap: 20px;
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+        }
+        h1{
+            color: #333;
+        }
+
+
+        .navbar .nav-links a {
+            padding: 15px 25px;
+            background-color: transparent;
+            color: white;
+            text-decoration: none;
+            font-size: 1.2em;
+            transition: background-color 0.3s;
+            border-radius: 5px;
+        }
+
+        .navbar .nav-links a:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .menu-toggle {
+            display: none;
+        }
+
+        /* Hero Section Styles */
+        .hero-section {
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-image: url('https://cdn.pixabay.com/photo/2014/05/18/19/12/campus-347285_960_720.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            color: white;
+            text-align: center;
+        }
+
+        .hero-section .content {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .hero-section h1 {
+            font-size: 3em;
+            margin-bottom: 20px;
+        }
+
+        .hero-section p {
+            font-size: 1.5em;
+            line-height: 1.6;
+        }
+
+        
+
+       
+
+        /* Services Section Styles */
+        .services-section {
+            padding: 80px 0;
+            background-color: #fff;
+            text-align: center;
+        }
+
+        .services-section h2 {
+            font-size: 2.5em;
+            margin-bottom: 40px;
+            color: #277ff1;
+        }
+
+        .services-container {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .service {
+            flex: 1 1 300px;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .service:hover {
+            transform: translateY(-5px);
+        }
+
+        .service h3 {
+            font-size: 1.8em;
+            margin-bottom: 10px;
+            color: #277ff1;
+        }
+
+        .service p {
+            font-size: 1.2em;
+            line-height: 1.6;
+            text-align: left;
+        }
+
+        /* Contact Us Section Styles */
+        .contact-section {
+            padding: 80px 0;
+            background-color: #f4f4f4;
+            text-align: center;
+        }
+
+        .contact-section h2 {
+            font-size: 2.5em;
+            margin-bottom: 40px;
+            color: #277ff1;
+        }
+
+        .contact-form {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: left;
+        }
+
+        .contact-form input,
+        .contact-form textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .contact-form button {
+            background-color: #277ff1;
+            color: white;
+            padding: 14px 20px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1.2em;
+            transition: background-color 0.3s;
+        }
+
+        .contact-form button:hover {
+            background-color: #242524;
+        }
+
+        /* Footer Section Styles */
+        .footer {
+            padding: 20px;
+            background-color: #333;
+            color: white;
+            text-align: center;
+        }
+
+        .footer p {
+            margin: 0;
+        }
+
+        .footer a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+    </style>
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+        import { getFirestore, collection, getDocs, addDoc, doc, updateDoc, deleteDoc, query, where, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBaOf1D2WLOuqHEyPrOV1JRQjfUleEMeyA",
+            authDomain: "student-teacher-appointm-ac387.firebaseapp.com",
+            databaseURL: "https://student-teacher-appointm-ac387-default-rtdb.firebaseio.com",
+            projectId: "student-teacher-appointm-ac387",
+            storageBucket: "student-teacher-appointm-ac387.appspot.com",
+            messagingSenderId: "756780687283",
+            appId: "1:756780687283:web:ebb2944bea32ae21c8b5c6",
+            measurementId: "G-SVZS3TQB11"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+    </script>
+</head>
+
+<body>
+    <div class="navbar" id="navbar">
+        <div class="brand">
+            <img src="https://cdn.pixabay.com/photo/2022/03/01/18/54/calendar-7041843_640.png" alt="Logo">
+            <h1>Student-Teacher Booking Appointment</h1>
+        </div>
+        <div class="menu-toggle" id="mobile-menu">
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+        </div>
+        <ul class="nav-links">
+            <li><a href="/student-teacher-booking-appointment-/student-teacher-booking-appoitment-/src/admin/login.html">Admin</a></li>
+            <li><a href="/student-teacher-booking-appointment-/student-teacher-booking-appoitment-/src/teacher/Login.html">Teacher</a></li>
+            <li><a href="/student-teacher-booking-appointment-/student-teacher-booking-appoitment-/src/Student/login.html">Student</a></li>
+            <li><a href="#services">Services</a></li>
+            <li><a href="#contact">Contact Us</a></li>
+        </ul>
+    </div>
+
+    <div class="hero-section">
+        <div class="content">
+            <h1>Welcome to Booking Appointment</h1>
+            <p>We provide a convenient way for students and teachers to schedule appointments. Get started now to manage your time efficiently.</p>
+        </div>
+    </div>
+
+    <div id="services" class="section services-section">
+        <h2>Our Services</h2>
+        <div class="services-container">
+            <div class="service">
+                <img src="https://cdn.pixabay.com/photo/2017/08/01/23/51/apple-2568755_640.jpg" alt="Office Hours">
+                <h3>Office Hours</h3>
+                <p>Teachers set aside specific times outside of class where students can drop in for one-on-one consultations. This provides students with an opportunity to seek clarification on course material, discuss assignments, or delve deeper into topics covered in class.</p>
+            </div>
+            <div class="service">
+<img src="https://cdn.pixabay.com/photo/2016/09/28/08/19/town-sign-1699957_640.jpg" alt="advising">  
+              <h3>Advising</h3>
+                <p>Teachers often take on advisory roles, guiding students in their academic journey. This can include helping students plan their course schedules, providing insights into career paths related to their field of study, and offering advice on how to achieve academic success.</p>
+            </div>
+            <div class="service">
+                <img src="https://cdn.pixabay.com/photo/2019/02/10/09/21/lecture-3986809_640.jpg" alt="Mentoring">
+                <h3>Mentoring</h3>
+                <p>Teachers act as mentors, offering guidance and support beyond academic matters. This can involve helping students navigate personal challenges, providing encouragement and motivation, and sharing insights based on their own experiences.</p>
+            </div>
+            <div class="service">
+                <img src="https://cdn.pixabay.com/photo/2014/08/09/11/49/computer-414056_1280.jpg" alt="supervision">
+                <h3>Supervision</h3>
+                <p>In academic settings, teachers may supervise student research projects, theses, or other independent studies. They provide feedback, ensure students adhere to academic standards, and help them develop critical research skills.</p>
+            </div>
+            <div class="service">
+                <img src="https://cdn.pixabay.com/photo/2015/12/04/14/49/hand-1076597_640.jpg" alt="Letter of Recomrndation">
+                <h3>Letters of Recommendation</h3>
+                <p>Teachers often write letters of recommendation for students applying for internships, scholarships, graduate programs, or jobs. These letters highlight the student's strengths, achievements, and potential based on their interactions and observations.</p>
+            </div>
+            <div class="service">
+                <img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBxITEhUSEhMVFRUWFRUVFhUVFxUVFxgVFhUWFhUWFhYYHSggGBolGxUVITEhJSkrLi4uFx8zODMsNygtLisBCgoKDg0OGhAQGy0lHyUtKy0tLS0tLS0tLSstLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLf/AABEIALcBEwMBIgACEQEDEQH/xAAcAAABBQEBAQAAAAAAAAAAAAAFAAIDBAYBBwj/xABDEAACAQIDBAcDCQgCAgIDAAABAgMAEQQSIQUGMUETIlFhcYGRMqGxBxQjQlJTosHSFTNicoKSstHh8BZDc5MXJGP/xAAZAQADAQEBAAAAAAAAAAAAAAAAAQIDBAX/xAAlEQACAgICAgICAwEAAAAAAAAAAQIRAxIhMQRBIlETYTJxoRX/2gAMAwEAAhEDEQA/APPAtSAV0LUqrWBoPwMAbNflari4Adp91N2Smr+X51NisW0ZACgggnjbmR+VCAaNndje7/mnfs9u0e+mptY84/Rv+KmXbK80ce+mBH8wfu9f9135o/2feD+dTrtuHnmHiP8AmpV2zh/t28Qf9UCKfzdvst6Gu5O3Txokm04D/wCxfPT41aglRz1GVrDWxB7LUwAoSnhKt4pOsfL4CmBKBEIWnZKnEdOCUAV8ldyVYyVwrSGQ5K6Ae01agwrMoYAWPDXX/uldODk+yfUH86AKwdhzpwxLCpGgb7Lf2momFuOnjUtsZIMceYp42iOd6rFaidKnZjCI2mnbXf2pH9oeooDiE0oGi/SetNSbA9Dwu0IDfOzW5ZMp153ufClNjY7nIxK8swAPnYkVlIout/Svwq+iVLm1wCQY+fr20htFe2hgSniOlux0ExtjvPx+NNfaoPEe6qIiqRYaf5JBqiPFEPwB86A7V3eMr5w1uqFta/Ak399adYamXD0Kb7FSMVHul/8A0bXQ2A4XB+IFaTD4PKAByoumFqZcLTcm+woEfN6VGvmlKpA86VamRKcsdWYoa0Ak2LF1n/p/OpdowajwP+Rq7u9B9JIO5fzqfa8FmXwb/M04sGADDXPmwsOHCiJh4eNLodB4CrIAsmGFVcTBZSe6jckNVMZF1D4GsmzQDxx1qdz49X8B8az8aVqtzI7l/AfGiL5E+ifEx9byHwFcWKiE8HW8l+AqaHCVpZNA5YK6YaOx4KuvgaVhQAMdMdNDRebCVTmh0NAE2zFtDH4H4mrOb/utd2bH9FH4H4mrJjproH2VcwpsjqBx/wC+Aq00VCJIB0p05ipk6BIZtSPrDwoc6VodqYbr+VDZcNWUuykBcQlAY4/pT5/GtVPFQZsLaS9v+8aIsbRchj639K/Crqx1zDJztyA9BariR1LfI0QrHUqx1MkVTpFSArrDU8eHqzHFVmKKmBXiwlW4sFVmKKrkaVQirHgRVpMAKtRrU6imBTGAFKiFqVAHjqQVaihqdIqnSO1Fjom3ej+mk/kT4tVnbMN2X+r/ACruwktO/wD8a/5Gr+OiuR5/lVREzOSxgC55G9NC6AAEkAX8x/xVzabgXXI5OUkEKzA9wIB1qKKS18sbscq/VYai9xcix4jW9u+tESUJIe6qeNi6jeB+FaSbCd1DNpYf6NvA/CsmWjNRJWz3EhuZPAfGs5hMBIwusbsO1VYj1Ara7hQ2MgIsbDQ+IpRfINcFqbD9byX/ABFWYYanxUfW8h8BSQVbJHolSGOktPpDKksAobisLoaNsKryx3FMRWwkFok8D8af0dRYjaDKViSPNYDUm1ybWA9bX8+WpHoqafASg48v2VBDQmSL6b+pa0qxUHeP6f8ArX8qmQkWtoQ9fyqhNhqNY9et5fmapyLWb7LM5i8NQtoesK1OJivVWHZDNdwNBcefZUjUW+gbDDVyLD1Zgw1X4YKEIpR4Wp1w9EEiFSCMUwByw1NHHVvoqQjqgGotWI6jNgLnQDiawe9W2mixC3Yho2uAvBozZ1v6EUWOMbPSEqYVUwc4dFccGUMPAi9WQaokkpU29KgDzhBU6LUSCrCVBRWlxEsAkljeyRRmRoyLqwvZgOannppQDefbZxCQSxl0B6UGxYAkdHwta9r29aI7f2gq3gDDPKii3PJnJPra3rTNuRWgwwtyl+MdVEqVtGUXEy/eSf3t/upBiJfvJP72/wB1eMVtbG3hXL6U7MwXLiJftyf3N/upcOzni7HxY06Zg2gI18qniisOXqt/S96HYGp2RvI8YUZFOUZSeF15eB4Vr908eZ2aVgoJW1l5BW0v2m1q8ziOlb/5PUCggfYv6kf6ojH2aSyNqmHMYvW8h8BUYFT4v2j5fAVGBTMxy1Iym2a1xUE0qoCzGwFUti7UkmzgBFQMQQes2oB5HQd59KlsuCXb6CVVsViI0tndVve2Y24AsbeABp+NxKwxPI3sxozHwVb+uleMJicTtPHJ1srMfq+zFENWt4DmeLEdtawjfL6M2z2HZqvIC5CBBeznif5eVh239avQOjDqMrAaHKwa3iQeNAN98OxwsGGjJVCeub3ukY9jtYkkH+mge6OGK4iN4cQrg9VosuVjHqCTdvq2ve3LvqbSdI1kpSjsz0ILQZ0+m/rX8qP5ay28u0hhY5sQbHo7FQeb6BF82IokjJBnHTRhczOFNypDEDVTrx8z5iqzDSvM9hbRxOLUPiLyrErItuozliCzMbgMQFHCx4d9bnYMTpnjdiQCGS+W4Viy26pItdCfOocaNpcrYszLQrYe3FxClYywtqw1Fr3Fr87gUW2lcRuQCSEYgDUkhToB21j/AJNXUiRbjNYH+kX/AN++ko3Fsz2pmvACi5IA7SbD1NWorEXBBHIjUVkt67SYiOM5WWJDK0bGysWNlJ0NwAj+vfRfZMyrP0SgKskRlVVJKjIwXNr7OYMNOHUNSlwXrxYcUU+1ICnUyBtqcBSFdFMAHvoHGCmMd7gAm32bjN7r15PtXaTYvEBgli3Rxqt78AFHvNe6kXFjXlG3thfNcbmTRWPSxdgIOq+R9xFO0lZcOXR6pgockaJ9lVX0AFWAaqbOxYljWQfWAv3HmPWrN6ZBJeuUy9doEeO7Kwj5VkXEsH0PRMRla3FbctOdG9pbZhw65pG1tog1ZvAefE6Vn8LMrWNlvbXjqDoCONjxrDYk9ZtSdTqeJA4E+VOEdnyaZqilRZ2tj3xEzSkdZiMqi5sBoqr/AN4k16RtiMYWDCQuc0ihjIM4vdlQsTcE+1w7lof8nG61pFxOIXgM0SHkeUjD4Dz7Kzu1domSaSRmJYu3kAbADutVyafCMor2wu+17kD6oHC3O5ub+Y07qr7YZmiLKDYcfDvrPviq225m1gsZDWa+jAi/V7KmSrk0glJ0ZHYyl5lUjML3I0N7eNbHauz8xjkXDiMhGUrwJ0OTqrwJBNu22vfn58AIsYyRG63BTwaxy+XCtSmJIQ6dYWGbjdeHVJ4Dt7jT7lwUklBpleLChVyH2+LHkOGgrY7gPdpOwKAPC4rDTSHMRrxsT3dla/cPFJGXLkC9lF+ZJFh7jSbSdEVZq8V7R8vgKaq0+aReN9LVU2ljEGEmmjYHKjWN/rkWX3stRsm+BuDXZh9vbd6SQ2PUzZEH2je1/E/CiGyossiSpCscgKiRgwu8bFQQ4HtaEsDyKisPtZQMOjAgMsqsBzuA41HIXo1sLaDNm6TMrZFVQjgFutcWDAqLWOpBOlGrVM2TTuB6DvLs4z4WeFR1njYL/OBdPxAV4Fs3HSRMGjdo301BIOhvY25X5V6J8pO2MRh8WGw+JdUkiRiiyXCSDqsCl7LpkPDW5rzV3LOznUsxYntLG5Pqa6MSpHHLs1+F27PJP0ssjSFlAPBSAlyES1lX2mI7T3mtrupvHhlnMc0rB8qKhkRVAD/SBS4uQbMvE217a8ljlsb/APeFPGKL5r21RbgfWIv1m7+tVvHFuyllajqfTJWvHflk2p10wqnn0z+hSMf5n0rG4nbOJcZGxEzC3WDyyOP7Wax4ChOIU343qVCmRZqtz4mktHGATmPVOuZre1427Ps1uN3toATyNJlRSy4dFUG11NlJ/mJ4n7VuVeRYKdkN0YqwIYFSVII7COfPyrVPtknDt1i7SFyzXGdZM5kBIGvfp7r1nkg/X2axn8aZ6FPvhgFkeJpwGRijXSS2YGxAYLY2Nxx5V5rtWWGPEMMJKJIX1AXMOjzXumoAIHIjloeGualBuR3+euutHNk7CmtmKAAhSCWS9uN8oNxx5irhBRfBk3Zc2W8jSo5Y/YvfUciBflfW3fR/ZW02XFtPLdujvHbS4QKFtppyLW7SaAveCQAkEGxIW5trx1HHQmpYMcryEA3zsAdLcSfLiaylF2zojJa0e2iA0uhNYqbbMyNlErfgt/iakh3gxBIUObm/G54X5ADsqFFktNKzY9Ca50RrMjbmLH1kPikn+6cN5cSOIiPqvxFIRpeiNZP5R9ns2GEigfRNmPblOhsfSrI3sn5wxnwkH6aZjd5mkieN8No6MpsyniCO0UAnTAW6G8qRKVmYiPiDYtlPZZQTWrj3mwTcMTEP5mC/5WryXCSCxU8RpQmbqsR2H3VWJXaLzKqaPczvDgxxxWH/APtj/wB0q8H6Tx91Ktfxox2Cez8cFNrHWw0OvOgW0FBkcoLWZtO4GiOFyhC5Juq3Fu0VTw/bfU6+dZx45N5/Kkz1D5OdrRy4dEaS8yBkZTbMVvdGFzcjLYX7jXl+3sG0GIlibirtbvUm6n0Iq5gNpyYeYTYcAOQVZWF1N+JsCOy9Rbx4+bFS9NIoDBVWycLC9jYkniTWsIP+SXBhPjgFQoXYKOJNq0u78bxsQ1sraA+HZQzZOHsdQeHG1EcXimyAMACp4jS/eaibt0b4opLZhraHRwvGyZnNs9mPEA9bUVPs7GA9RrZJQSv8LG49L39TQbZ+M6W2YexcBrX0NrjiNdKuExoALNr2ED8qqPHLIm9nUTXbP3NgnUTu83XGZgsiABj7Qt0ZPG/OhSQCGTocxIUtck3OpNjftArW7o4wvhQLkC7cADxObViO1jWY2rhycS5AaxexaxIBIsNeHYfOsspeJfIMDaZ6HM2gKix7WOh8Nazsk2bCTJ9IAHCMdQrWIYEDg1u3lrWtXDqYTGgVTbql9R1frP3XrAynEs7XkfifZJVeJGgHKljjFcvs3kpPjhf2QYjY79GrLmkzAFgRfqqy9UW8T6GnCCMFY2KIBbV2ZHW9tVNuWmh+yKtYCAA3mYX4gMbn3+fuoVtaMs3TLGVTWzMCAwGuZdNVsL34ca6sS/LOjnlGnRp9/tlj5ik2YyMjqWkKqDkdQgF1AuMwjsO+vO8DBnZV7Ta/xPpXr8YM2zsRHlZy0GVQi5j0mW6ELx0YA9tYbYW7GJjlRsRA8SkNlMilCSBf2WAPCpU6i2/RGSPzpHDu5HcAs1z2OnfxAQ1zHbJwkWHLoWaQrYi5IRiyhRe4BOp5UWxrsSbcjYXNtAe08NNfKi2y9ycRiUYxdEeicEpIOqzZGsh9VNyDxBtyqVkk2azwxirMBsiVljkdYUZUsrvezDMQB9a/E20FqsbtbOVgZZFVh7KhgGGntNY9+nrW52juXtERyRnCgBhEB0TwlepIGYsSykm38PK2lZ+HYuOACJhmCropLpYgc/a1vxq7b7MZRikqLmHwcPFYYQRzEUYPrlqnvJspo7YqLEJfIEMaOVkX6QarYDMpB17D2jhoN39iYkPfEonR5T1QcxJ5XHC1r8+yjWK3OhlUhfor8cgRb95FtanZpgkmuTE7KhwEsA+dmWTGKrBWMkxBALSRhrqVIANtTw7KIbPtK+UEE2Jt4aknsFarD7oYZIjGyK97DpGChwBYWDgAgacu09tLD7JwcJuuRWta9wzW7L6mnt9ktfQJ2b8nhfPiMUVkF7hIp1CnSwDMQuU8h1qGjd2XDz9MuEHRhmZVEiOba9HqhfNbTTTXnzrSYjeTBQizTqO7MB7iRQ4b9YVs/Qq0pRc7W06uZVuM1g2rKNDzpX+hvqjOj507EjDzEntXL3/W7602w9iS9IJJlyqY9FJ6wY20PeOHHlSxG3nDKGaBFJYMVYyslgSLoAQbkW0NDNu7yERkYeaTpdLMUCpxF9BY8L0J10glJySTfRsDslf4h4M3+6dNs0HgSvh/o15X/wCdTRoEMQeQDWYySDMe3ItretSw70bRyiQSR5SA2UGW4HdmJ+NZ6MLRoN/cf80iyq5Mj6DRNBzPCvKpMY54ux8SaLbz4yTESFnJJsNT2AcBWdNaQXApliPFMuoNX1LzG6IzGwuFUt5mw0FB70c3O2uuGxKyuLoAwI15i3LvtVNeyU2+BnzSX7p/NGv8KVeif/kPBdjf2v8AppVOz+h0eaRWI401VW5Aubjl212FWZlVL5mYIB3sQAPUiim9Wy4MNMI4ZZJDkvIZE6MqxJ0C24WFXJWqCEtXsDcK5Q5jqbWA7Kbi8SXNzpblUDS0wvVqclHS+CXTdk8OJkQ3R2XwNEodrlxlmAY8nsAw8be0KEI4NSCooabRpMJIDYJb4e6r6qt7sLgcbAk2vrwrHpiLc6M7u7zSQScijWV9AWA7VJGh+NqTiUpG73e2tEsBiwyhQGOhYsRfU2zsW7autspEWSaTG4aOS3VjbonckC+UkG4PADQ1ZiWDEIGKrIjDTMo873qhj918CqO/RCOys30bNHwF9ApGtZLW+TfdpUilg95n0zKrDs4eAqvtX50xaT5pLlc3DIAwIIHADUVZj2LlVQ4ObQHx5ivUI4QqgAaAADwArfxMEZuW3ojyc8oauPs8bxAkfJ0mHxKIoABETHxY6a0b2Ls3DYj/APWXFTqSpLRmEJcD2tZFI0zcrV6Ug04fGvO9+N71weNUBMzLDawANjIwJ4sLaKvrXS8KwpyxtpnNDyZTaTLeL2Bjj1fnsuVQERFbLGERQq9TU3stz1rXJ0HChSbk4i+bp0V8186oWYixBBDHvNB5/lGxj/u4W89Pgv51BjNuY+SNGWZQ7Fw8ZVvowCMpzEsGzAk6DS2tcTcn2bcB2bcsrq07Mb63kEQtzuLH4irGzcIuFU/SRBbkjWQt3jOGHxtWGkhxb+3imHclx/jlpg2ChN3Z3P8AEf8Ai/vp8/YuPRr49tQxv9JtKedeIjDApc6WZOuSNRppwp8PymQIGuZJSToMvAAngbC99OdYjbGyY4ozIGyj2cl2JY63Ck8Lg6nkAe3UXu2t8Qngx91PsVnoc3ymzN+5wrnsuMo9esKoT727Vk9lY4h3kk/hP5VII6ZM6qLsQo7SQPjSpBbKfTY1w3S4nU2sUFsuutuBNxprULbHDfvJJZP5nJB9akl21h1/9gb+W7e8aVQxG86jRI2bvJCj3XpiLbbMw8a3KLa/MFtfA3qnGv03Sx5soyAxqLB1V1cobX0JRfSqrbekdlUqoUngASdLEa37e6tKcTFpdhrawuBxrs8Xx4Zb2dUZzk10VoZZXkClAC5IAHHMbnt8an21s2SCBp5QAAVXLe7EsbC1tPfUuJUhcydVlsy27VNx8KEb1bz9ND0HSZ+spPVAtl1421N6nzfH/DOKj0x4pWnYd2RuJHiI4ZpJ2tKofInRqyqUzals1zfLy50RxG58yaRKGjBCp1rm3AZjbjQ3dveQ9FEi5G6KJUI1DCwUa6/we+jMm8d7Ax/WTg1z7anhauBt2bJGB21hGjaRHBDg2t31l3FjXqsuxXxmMd2hmWIotmsBd7AcTxFr8Kw219kskrJb2WKnyNUpKI2nLoBVPhtCG7CD6GpJ8LYGoojbjwq07VolRp8mxmhZTbIW4ENYagi44ac6VBZNuzE6OQNAAOAAFhalXQ1gb9/4Z3P9AQSHjTul7ajrlYgTZhSutQ0qAJCB211H76ipwoAkL0lNR0gaAPVPk53hj6BopXVChzAsQt1PPXstRjeLePCoqAusn0kZZUsxyK2c68BfLbzrxzCYpo2DoxVgbhhoQaLY3a7zx/SuzsOGZiePMXqVGpJl7XGjcRfKsWJWXDKVudVbW19Lgi162my9+cHMoKzKDYXV7qR418+G9FNlbOeQFlB8baeZOgrpw5NZNtWZTjsqPozD7ThcdWSM+DCvGNr4zpcTNJYkNIwU3v1V6q6+CihWE2a7vkWQM3DLGDIR45dB61ssF8n2MI0YoLcVi1/EfhTzZlJUkLHi1dme6PS5BA7SPzp4q7tfdkYYgTR4mbnmYSBLn+TnT9l7Uwyp0bQtzsIiGOv8Do2vfeuaMdvdG3QOkkVRdmCjtJAHvqrJtqBeD3/lBPoeFa/ZuwocbnOIwhjRf3THNFIQeNwpA5DlSxnyW4VhaKWWPxyvfsvcX99S6Q6Z5ltOf5xKApIVVIAYE631sEBOvV9KrYTpYHDZSHIIVbAk3/h/7wreYn5LcQrZop4n1uAwaM+FxmoRjdytoIc3QZ+V43VvcSD5Wp2KgJNjcSyEs8mtrEdTtzCy8eXpQd9Tc6nmTqffRrF4XER6SQypb7SMB62tQtpbnkfQ00JjYRxPd+YrU7B3UfFAvGUABsc1yb2vwrO4aCWQ5Y43c9iKW/x4V6P8nWAxeFe00LIktlUMQTnGouoNwLXrbBo51PoznevxCWyt11SExMkblr3fIA2vIMTp5CnQ7i4ccVHmWc+ugHpWyxKsdWsDbgv51CEr1sWLHVqNHLOcrqzzPH4pYC0UhJdCVt2gcD5ixq3ursN8VFmGRUDMt21Pb7NuwjnRHfDZadMk2TNnXJxtZl1UnTmL+lQbPlnVQsZKAchcca4fPySk9H66OnBVWGcN8nWEzB3VmYfYJiF+f7ux99abDYCOLRI1Tvtr6nU1iZN6cRE2Qsx01IAIH9VRbybzWwkliMzrkB1zdbj1vC9eXfNHWoOrNNvZvPHg473VpT7Ed9dfrG3AV45tbbcs0jysQpc3IUWHZQkzk8dajL1aj9lJpdD3YnnUeWuXrmY8udVRLY255cK7U400rtMytFGu1ylTIFSpUqAFXRXK6KAFSpUqAHKakDVEBofKr0WypTGZdAg5scvkL8T3UAQpckAcSbDxNe6btbv7PhiRZsL0jZVzlnd1L21PRsco17q8IiYqQ9uBBrQYbe6ZTdWYdwJI9DRbRSo+ktmbQwigLEqxDsCBB7har8u1IV+uD4a/CvBtk7/6WkKk/wAQK+8aVo8DvfE9ri3eCGFQ8lFqNnpM+304KhbxsBQfF4hXN+ijXvVbH1oRDtKNuDr4HT41cRr1G9j1okAp4poNOvSGOvXCfPztXL029MCQSLzVvcwqnjdj4SUdeKN/5oxf4XqfNXGc0gOQYZEFkGQdigAelZrfh3CRZXZSHvdRqLDurQPmoXtguAuS2YsAA3A1thlpNSIkrVATZW0rSq8khtla+ZueluNWtob74WO4DZyOS60D39wTlEvkFzqQAvAUCw2xoMoskkj3FyzKsY7RZdT616X/AEG/4xOZ+Pb5ZPtzfP5yBEYR0ZZSQSSxCsDpbhpS29DhsPMFjjxWQAEskrZdRew48KtYKJo82QCPMMpC6XHZVyNH5A1x5sksjuRtjSh0CdhbHixckjQSTDLlJEmo619Li1zpVPfLY0mHCljdWaw8bXrSHbC4fVpQnaBb4c6y++G83zpUQXKoxbMRa+ltK59ebNt7MsaV6TGor1RDY8tUqJYAnifhUMdri/CrEz3Yd1BLZwmlXK5QIr0qVKmI7XKVKgBU4U2nCgBV0VylQBp49gNBh4sdiQOimv0KKyl5MvEkfVW/nQbae0HlIzaKNFQaKo7h+dVGkJABJIF7AkkC+psOV6bTGSwLcEd1/SlA3cPGnYJDnHLRifDKb0/BYViL8jUgcJ7hSW4IykjwNqJR7LYi9iap4NQZEBNgSoJpDL2D2pil4OW7mF6OYLejEodYyf8A4yQfSiOH2PGOOtW/mqrlKqNDY+DafGx8qzai/RorOYTf62khZe6RCPfWhwO+ET/ZP8rD4Ghb4cEWYAjsIFD8Ru7hW/8AXlPahKn3VOv0yrNzDtqFvrW8RVuOZW9lgfAivM//AB2Vf3OJde57OKaRj4vqxyjtQlW9DSqQcHqJrl681h3vmj0lSaPxXMvrRfA78o31kbzymi2u0FGyY1E0YbRraczy8KFwbxRNxBHeNR7qtR46JuDjz0qozQmirtXZ0c3UcZ17xz7aBzbg4c6ozxn+FiK1sSdlTBa0RLMDLuli0/dYosOxwDVb/wAb2hKbSTKi/wAGl63+LxSRjM7BR3m1ZTa++8UYIiXMftN1V/2alyodCwO4+FjGaQGQ8SzmsVv/ADwGZEgK5UQg5bWzE8NOPCq+296Z8QcpZmB+qui+g40ClidfbUrfXUEfGqSYrXohc0wUnqaAKNWPlVEMckFhc+lN4XNTPMDzqBzpQIYDSrgNKmIbSpUqAFSpUqAFXRXK7QB2lSpUAIGpEksDUVdAoGnRpNkYXDNhmJklbFSkxJEqARxrmUtI8hvm6oOgH5GjWAwMadQi5A6p7V/2OB8u2sng8Z0TqdDYa27D/wAVoY94cO2jFlPEEISQe0EH8qlpstNB/JobADQ/CsBs2MNMingWUHwOlafD7fjYsha3YxBUNpzB9k1k8LNkdX+yQ3prUpA2bfEbcSGRYCpYnKM2g0OgJudfdRdrupA0uCPA9/nXnu2do/OXVlTKQLDW5IvcX7La+tbfZmIMiIx0zrc9zrYMPj6UmqKTthCJwQCfTsI0I9amEnYKo4dgLgC5DMTc2AuzW1sdatx4gHQCxHL8weYqSicKTxNqeFUd9QC5407OBSAnJvpaqGL2Jh5P3kSE9trH3VOZzyqMy9tAADH7uxoU6CSSMs4WwbMOBJ0PhTX2fjY/ZlSUdjDKfWieNnGeHuZj6RsPzrPbU3yAOWFQ9j7TXA8gONOrE2kW125iYv3kLr3obiiSb2TGBpFZgBoSy6jwrNYbfO/72LzQ39x/3Uu194IJISkZJZrCxBFhxJ91GlBsgTtTeGSQkkkntY39ByoRmZySxNhxP5Co5ePnUj6RqO0kn4CtFFLozbbGdNY3XS3Dt9asjaktrMxYdjdb41RpwNUSi0ZI24rlPd/qoClcDVJyoGyErTzwp4qNzQSdUaUq6vCu0AXP2Difu/xJ+ql+wcT93+JP1UqVMBfsHE/d/iT9VL9g4n7v8SfqpUqAF+wMT93+JP1V07BxP3X4o/1UqVAC/YOJ+6/FH+ql+wcT91+KP9VKlQAm2FifuvxR/qqWHdyfiyWH8yE/GlSoAtx7LkT2cNmPazx/qpsuFxh0EeUdimMe/NelSpUOyv8AsbE/dn+6P9VOGx8QDfoj/dH+qlSoAIQ7IPEpKh/hMLDy6wNWY8JPELwu+lyEdY7Enjr0hsfKlSoCybAzYkE54WJbiRKq9uvtURw2Cndc5eRWBPVupA7rg3tbvrlKk0ik2WMLLPa7Ict7e0rEeZNyPH38iCKx+qeJGpXWxtfjXKVQ4opSYnhk+z7x/uojhpfs+8f7pUqVDsobZwExUZV1644rzjYdtYX9g4n7r8SfqrlKtIkTF+wcT93+JP1U+HYWJBH0f4k/VSpVTIOPsLE/dfij/VUr7CxBRB0fDMD1k8R9alSpDQ07uz/dn+5P1U07vYn7v8SfqpUqRq0vo4dg4n7r8Sfqp67DxH3R/uj/AFUqVMyZxtiYn7r8Uf6qYdg4n7r8Uf6qVKmId+w8R90f7o/1V2lSoA//2Q==" alt="Committee Work">
+                <h3>Committee Work</h3>
+                <p>Teachers may participate in various committees within the institution, such as curriculum development committees or student advisory boards. This involvement allows them to contribute to decision-making processes that impact students' educational experiences.</p>
+            </div>
+            <div class="service">
+                <img src="https://cdn.pixabay.com/photo/2019/05/24/19/14/learn-4226948_640.jpg" alt="Professional Development">
+                <h3>Professional Development</h3>
+                <p>Teachers engage in ongoing professional development activities to enhance their teaching skills and stay updated on advancements in their field. This may include attending workshops, conferences, or pursuing additional qualifications.</p>
+            </div>
+        </div>
+    </div>
+    
+        </div>
+    </div>
+
+    <div id="contact" class="section contact-section">
+        <h2>Contact Us</h2>
+        <div class="contact-form">
+            <input type="text" placeholder="Your Name">
+            <input type="email" placeholder="Your Email">
+            <textarea rows="4" placeholder="Your Message"></textarea>
+            <button type="submit">Send Message</button>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>&copy; 2024 Student-Teacher Booking Appointment. All rights reserved. | Designed by <a href="#">Nitu Kumari</a></p>
+    </div>
+
+    <script>
+        window.onscroll = function () {
+            scrollFunction()
+        };
+
+        function scrollFunction() {
+            if (document.body.scrollTop > 80 || document.documentElement.scrollTop > 80) {
+                document.getElementById("navbar").classList.add("scroll");
+            } else {
+                document.getElementById("navbar").classList.remove("scroll");
+            }
+        }
+
+        document.getElementById("mobile-menu").addEventListener("click", function () {
+            var navLinks = document.querySelector(".nav-links");
+            navLinks.classList.toggle("active");
+        });
+const contactForm = document.querySelector('.contact-form');
+
+contactForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const formData = new FormData(contactForm);
+    const name = formData.get('name');
+    const email = formData.get('email');
+    const message = formData.get('message');
+
+    try {
+        await addDoc(collection(firestore, 'messages'), {
+            name,
+            email,
+            message,
+            timestamp: serverTimestamp()
+        });
+        alert('Message sent successfully!');
+        contactForm.reset();
+    } catch (error) {
+        console.error('Error sending message: ', error);
+        alert('Oops! Something went wrong. Please try again later.');
+    }
+});
+
+    </script>
+</body>
+
+</html>

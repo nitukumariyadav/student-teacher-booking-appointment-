@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Teachers</title>
+    <style>
+/* styles.css */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+header {
+    width: 100%;
+    background-color: #4CAF50;
+    color: white;
+    text-align: center;
+    padding: 1em 0;
+}
+
+header input {
+    width: 80%;
+    padding: 0.5em;
+    margin-top: 1em;
+}
+
+main {
+    width: 100%;
+    padding: 1em;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#teachers-container {
+    width: 80%;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1em;
+}
+
+.teacher-card {
+    border: 1px solid #ddd;
+    padding: 1em;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    cursor: pointer;
+}
+
+@media (min-width: 600px) {
+    #teachers-container {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (min-width: 900px) {
+    #teachers-container {
+        grid-template-columns: 1fr 1fr 1fr;
+    }
+}
+
+/* Modal Styling */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 600px;
+    border-radius: 8px;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+#booking-modal form {
+    margin-top: 1em;
+}
+
+#booking-modal textarea {
+    width: 100%;
+    height: 100px;
+    resize: vertical;
+    margin-top: 1em;
+    padding: 0.5em;
+}
+
+#booking-modal button[type="submit"] {
+    background-color: #4CAF50;
+    color: white;
+    padding: 0.5em 1em;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+    margin-top: 1em;
+}
+
+#booking-modal button[type="submit"]:hover {
+    background-color: #45a049;
+}
+
+/* Styling for Send Message Form */
+#message-modal form {
+    margin-top: 1em;
+}
+
+#message-modal textarea {
+    width: 100%;
+    height: 100px;
+    resize: vertical;
+    margin-top: 1em;
+    padding: 0.5em;
+}
+
+#message-modal button[type="submit"] {
+    background-color: #4CAF50;
+    color: white;
+    padding: 0.5em 1em;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+    margin-top: 1em;
+}
+
+#message-modal button[type="submit"]:hover {
+    background-color: #45a049;
+}
+
+    </style>
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+        import { getFirestore, collection, getDocs, addDoc, doc, updateDoc, deleteDoc, query, where, onSnapshot, orderBy } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+        import { getAuth} from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBaOf1D2WLOuqHEyPrOV1JRQjfUleEMeyA",
+            authDomain: "student-teacher-appointm-ac387.firebaseapp.com",
+            databaseURL: "https://student-teacher-appointm-ac387-default-rtdb.firebaseio.com",
+            projectId: "student-teacher-appointm-ac387",
+            storageBucket: "student-teacher-appointm-ac387.appspot.com",
+            messagingSenderId: "756780687283",
+            appId: "1:756780687283:web:ebb2944bea32ae21c8b5c6",
+            measurementId: "G-SVZS3TQB11"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+
+let selectedTeacherEmail = '';
+
+// Function to display teachers
+const displayTeachers = (teachers) => {
+    const container = document.getElementById('teachers-container');
+    container.innerHTML = ''; // Clear previous results
+    teachers.forEach(teacher => {
+        const card = document.createElement('div');
+        card.className = 'teacher-card';
+        card.innerHTML = `
+            <h2>${teacher.name}</h2>
+            <p>${teacher.subject}</p>
+        `;
+        card.addEventListener('click', () => showProfileModal(teacher));
+        container.appendChild(card);
+    });
+};
+
+// Function to fetch and search teachers
+const searchTeachers = async (query) => {
+    const teachers = [];
+    const snapshot = await getDocs(collection(db, 'teachers'));
+    snapshot.forEach(doc => {
+        const data = doc.data();
+        if (data.name.toLowerCase().includes(query.toLowerCase())) {
+            teachers.push(data);
+        }
+    });
+    displayTeachers(teachers);
+};
+
+
+// Event listener for search input
+document.getElementById('search-input').addEventListener('input', (e) => {
+    const query = e.target.value;
+    searchTeachers(query);
+});
+
+// Initial fetch (display all teachers)
+searchTeachers('');
+
+// Function to show profile modal
+const showProfileModal = (teacher) => {
+    const modal = document.getElementById('profile-modal');
+    const profileDetails = document.getElementById('profile-details');
+    selectedTeacherEmail = teacher.email;
+    profileDetails.innerHTML = `
+        <h2>${teacher.name}</h2>
+        <p>${teacher.subject}</p>
+        <p>${teacher.email}</p>
+        <button id="book-appointment-btn">Book Appointment</button>
+        <button id="send-message-btn">Send Message</button>
+    `;
+    modal.style.display = 'block';
+    document.getElementById('book-appointment-btn').addEventListener('click', showBookingModal);
+    document.getElementById('send-message-btn').addEventListener('click', showMessageModal);
+
+};
+
+// Close modal when the user clicks on <span> (x)
+document.querySelectorAll('.close').forEach(closeBtn => {
+    closeBtn.onclick = () => {
+        closeBtn.parentElement.parentElement.style.display = 'none';
+    };
+});
+
+// Close modal when the user clicks anywhere outside of the modal
+window.onclick = (event) => {
+    document.querySelectorAll('.modal').forEach(modal => {
+        if (event.target == modal) {
+            modal.style.display = 'none';
+        }
+    });
+};
+
+// Show booking modal
+const showBookingModal = () => {
+    document.getElementById('booking-modal').style.display = 'block';
+
+};
+
+// Show message modal
+const showMessageModal = () => {
+    document.getElementById('message-modal').style.display = 'block';
+
+};
+
+
+
+// Function to book appointment
+
+const bookAppointment = async (event) => {
+    event.preventDefault();
+    const appointmentDate = document.getElementById('appointment-date').value;
+    const appointmentMessage = document.getElementById('appointment-message').value;
+    
+    try {
+        const docRef = await addDoc(collection(db, 'appointments'), {
+            teacherEmail: selectedTeacherEmail,
+            date: appointmentDate,
+            message: appointmentMessage
+        });
+        console.log('Appointment booked with ID: ', docRef.id);
+        alert('Appointment booked successfully!');
+        document.getElementById('booking-form').reset();
+        document.getElementById('booking-modal').style.display = 'none';
+    } catch (error) {
+        console.error('Error booking appointment: ', error);
+        alert('Error booking appointment: ' + error.message);
+    }
+};
+
+// Function to send message
+const sendMessage = async (event) => {
+    event.preventDefault();
+    const messageContent = document.getElementById('message-content').value;
+    
+    try {
+        const docRef = await addDoc(collection(db, 'messages'), {
+            teacherEmail: selectedTeacherEmail,
+            message: messageContent,
+            timestamp: new Date().toISOString()
+        });
+        console.log('Message sent with ID: ', docRef.id);
+        alert('Message sent successfully!');
+        document.getElementById('message-form').reset();
+        document.getElementById('message-modal').style.display = 'none';
+    } catch (error) {
+        console.error('Error sending message: ', error);
+        alert('Error sending message: ' + error.message);
+    }
+};
+
+    </script>
+</head>
+<body>
+    <header>
+        <h1>Search Teachers</h1>
+        <input type="text" id="search-input" placeholder="Search by teacher's name...">
+        
+    </header>
+    <main>
+        <div id="teachers-container"></div>
+    </main>
+
+    <!-- Modal for Teacher Profile -->
+    <div id="profile-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div id="profile-details"></div>
+        </div>
+    </div>
+
+    <!-- Modal for Booking Appointment -->
+    <div id="booking-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Book Appointment</h2>
+            <form id="booking-form">
+                <input type="datetime-local" id="appointment-date" required>
+                <textarea id="appointment-message" placeholder="Message for the teacher..." required></textarea>
+                <button type="submit">Book</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal for Sending Message -->
+    <div id="message-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Send Message</h2>
+            <form id="message-form">
+                <textarea id="message-content" placeholder="Your message..." required></textarea>
+                  <button type="submit">Send</button>
+            </form>
+        </div>
+    </div>
+    </div>
+</body>
+</html>

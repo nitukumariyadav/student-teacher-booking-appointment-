@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Appointments</title>
+    <!-- Include your CSS styles -->
+    <style>
+        /* Your custom styles for managing appointments */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .header {
+            background-color: #0b81e2;
+            color: white;
+            text-align: center;
+            padding: 15px 0;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #0b81e2;
+            color: white;
+        }
+        tr:hover {
+            background-color: #f2f2f2;
+        }
+        .status-td {
+            text-transform: capitalize;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        .action-buttons button {
+            padding: 8px 12px;
+            cursor: pointer;
+            border: none;
+            border-radius: 4px;
+            color: white;
+        }
+        .btn-approve {
+            background-color: #5cb85c;
+        }
+        .btn-cancel {
+            background-color: #d9534f;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Manage Appointments</h1>
+    </div>
+    <div class="container">
+        <h2>Appointments List</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Teacher</th>
+                    <th>Student Email</th>
+                    <th>Appointment Time</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="appointments-list">
+                <!-- Appointments fetched from Firestore will be displayed here -->
+            </tbody>
+        </table>
+    </div>
+    <!-- Include your Firebase initialization and Firestore scripts -->
+    <script type="module">
+        // Import Firebase modules and initialize app
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+        import { getFirestore, collection, query, where, getDocs, updateDoc, doc } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+
+        // Initialize Firebase app with your configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBaOf1D2WLOuqHEyPrOV1JRQjfUleEMeyA",
+            authDomain: "student-teacher-appointm-ac387.firebaseapp.com",
+            databaseURL: "https://student-teacher-appointm-ac387-default-rtdb.firebaseio.com",
+            projectId: "student-teacher-appointm-ac387",
+            storageBucket: "student-teacher-appointm-ac387.appspot.com",
+            messagingSenderId: "756780687283",
+            appId: "1:756780687283:web:ebb2944bea32ae21c8b5c6",
+            measurementId: "G-SVZS3TQB11"
+        };
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Function to fetch and display appointments
+        async function fetchAppointments() {
+            const appointmentsList = document.getElementById('appointments-list');
+            appointmentsList.innerHTML = ''; // Clear previous entries
+
+            // Query appointments collection
+            const appointmentsRef = collection(db, 'appointments');
+            const querySnapshot = await getDocs(appointmentsRef);
+
+            // Display each appointment in the table
+            querySnapshot.forEach((doc) => {
+                const appointment = doc.data();
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${appointment.teacherName}</td>
+                    <td>${appointment.studentEmail}</td>
+                    <td>${appointment.appointmentTime}</td>
+                    <td class="status-td">${appointment.status}</td>
+                    <td class="action-buttons">
+                        <button class="btn-approve" data-appointment-id="${doc.id}">Approve</button>
+                        <button class="btn-cancel" data-appointment-id="${doc.id}">Cancel</button>
+                    </td>
+                `;
+                appointmentsList.appendChild(row);
+            });
+
+            // Add event listeners after appending rows
+            addEventListenersToButtons();
+        }
+
+        // Function to add event listeners to approve and cancel buttons
+        function addEventListenersToButtons() {
+            const approveButtons = document.querySelectorAll('.btn-approve');
+            const cancelButtons = document.querySelectorAll('.btn-cancel');
+
+            // Add event listener for approve buttons
+            approveButtons.forEach(button => {
+                button.addEventListener('click', async () => {
+                    const appointmentId = button.getAttribute('data-appointment-id');
+                    await approveAppointment(appointmentId);
+                });
+            });
+
+            // Add event listener for cancel buttons
+            cancelButtons.forEach(button => {
+                button.addEventListener('click', async () => {
+                    const appointmentId = button.getAttribute('data-appointment-id');
+                    await cancelAppointment(appointmentId);
+                });
+            });
+        }
+
+        // Function to approve appointment
+        async function approveAppointment(appointmentId) {
+            try {
+                const appointmentDoc = doc(db, 'appointments', appointmentId);
+                await updateDoc(appointmentDoc, { status: 'Approved' });
+                fetchAppointments(); // Refresh appointments list
+                alert('Appointment approved successfully');
+            } catch (error) {
+                console.error('Error approving appointment:', error);
+                alert('Failed to approve appointment. Please try again.');
+            }
+        }
+
+        // Function to cancel appointment
+        async function cancelAppointment(appointmentId) {
+            try {
+                const appointmentDoc = doc(db, 'appointments', appointmentId);
+                await updateDoc(appointmentDoc, { status: 'Canceled' });
+                fetchAppointments(); // Refresh appointments list
+                alert('Appointment canceled successfully');
+            } catch (error) {
+                console.error('Error canceling appointment:', error);
+                alert('Failed to cancel appointment. Please try again.');
+            }
+        }
+
+        // Fetch appointments when DOM content is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchAppointments();
+        });
+    </script>
+</body>
+</html>

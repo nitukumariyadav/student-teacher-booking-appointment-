@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to Student Teacher Booking App</title>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-image: url('https://cdn.pixabay.com/photo/2014/05/18/19/12/campus-347285_960_720.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            height: 100vh;
+            display: flex;
+            flex-direction: row;
+            color: #333;
+        }
+        .header {
+            width: 100%;
+            background-color: #0b81e2;
+            color: white;
+            padding: 10px 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            text-align: center;
+            z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        .header h1 {
+            margin: 0;
+            padding: 0;
+            font-size: 1.5em;
+        }
+
+        .header .menu-toggle {
+            left: 10px;
+            top: 15px;
+
+        }
+
+
+        .sidebar {
+            height: 100%;
+            width: 250px;
+            position: fixed;
+            top: 0;
+            left: -250px; 
+            background-color: rgba(255, 255, 255, 0.9);
+            padding-top: 50px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            transition: left 0.3s; 
+        }
+
+        .sidebar.active {
+            left: 0; 
+        }
+
+        .sidebar a {
+            padding: 10px 15px;
+            text-decoration: none;
+            font-size: 18px;
+            color: #333;
+            display: block;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .sidebar a:hover {
+            background-color: #1085f3;
+            color: white;
+        }
+
+        .sidebar a i {
+            margin-right: 10px;
+        }
+
+        .content {
+            margin-left: 0; 
+            padding: 30px;
+            width: 100%;
+            transition: margin-left 0.3s; 
+        }
+
+        .menu-toggle {
+            position: fixed;
+            top: 5px;
+            left: 20px;
+            cursor: pointer;
+            font-size: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background: #1e4eec;
+            color: #fff;
+        }
+
+        td {
+            background: transparent;
+            color: #131212;
+            font-weight: bold;
+        }
+
+        .actions button {
+            margin-right: 5px;
+            padding: 5px 10px;
+            font-size: 14px;
+        }
+
+        .actions button.edit {
+            background: #ffc107;
+            color: #fff;
+        }
+
+        .actions button.delete {
+            background: #dc3545;
+            color: #fff;
+        }
+
+        .actions button.cancel {
+            background: #dc3545;
+            color: #fff;
+        }
+    </style>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getDatabase, ref, get, child, remove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+        import { getFirestore, collection, getDocs, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBaOf1D2WLOuqHEyPrOV1JRQjfUleEMeyA",
+            authDomain: "student-teacher-appointm-ac387.firebaseapp.com",
+            databaseURL: "https://student-teacher-appointm-ac387-default-rtdb.firebaseio.com",
+            projectId: "student-teacher-appointm-ac387",
+            storageBucket: "student-teacher-appointm-ac387.appspot.com",
+            messagingSenderId: "756780687283",
+            appId: "1:756780687283:web:ebb2944bea32ae21c8b5c6",
+            measurementId: "G-SVZS3TQB11"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const firestore = getFirestore(app);
+
+        async function loadTeachers() {
+            const snapshot = await get(child(ref(db), 'teachers'));
+            const teachersTable = document.querySelector('#teachersTable tbody');
+
+            teachersTable.innerHTML = '';
+            if (snapshot.exists()) {
+                const teachers = snapshot.val();
+                for (const id in teachers) {
+                    const teacher = teachers[id];
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${teacher.name}</td>
+                        <td>${teacher.subject}</td>
+                        <td>${teacher.department}</td>
+                        <td class="actions">
+                            <button class="edit" onclick="editTeacher('${id}', '${teacher.name}', '${teacher.subject}', '${teacher.department}')">Edit</button>
+                            <button class="delete" onclick="deleteTeacher('${id}')">Delete</button>
+                        </td>
+                    `;
+                    teachersTable.appendChild(row);
+                }
+            }
+        }
+
+        window.editTeacher = function(id, name, subject, department) {
+            teacherId.value = id;
+            nameInput.value = name;
+            subjectInput.value = subject;
+            departmentInput.value = department;
+        }
+
+        window.deleteTeacher = async function(id) {
+            await remove(ref(db, 'teachers/' + id));
+            loadTeachers();
+        }
+
+        async function loadUsers() {
+            const querySnapshot = await getDocs(collection(firestore, 'users'));
+            const userTable = document.querySelector('#user-table');
+            userTable.innerHTML = '';
+
+            querySnapshot.forEach((doc) => {
+                const user = doc.data();
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${user.email}</td>
+                    <td>${user.approved ? "Approved" : "Pending"}</td>
+                    <td class="actions">
+                        <button class="approve" onclick="approveUser('${doc.id}')">Approve</button>
+                        <button class="cancel" onclick="cancelUser('${doc.id}')">Cancel</button>
+                    </td>
+                `;
+                userTable.appendChild(row);
+            });
+        }
+
+        window.approveUser = async function(id) {
+            const userRef = doc(firestore, "users", id);
+            await updateDoc(userRef, {
+                approved: true
+            });
+            loadUsers(); 
+        }
+
+        window.cancelUser = async function(id) {
+            await deleteDoc(doc(firestore, "users", id));
+            loadUsers();
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            loadTeachers();
+            loadUsers();
+        });
+    </script>
+</head>
+<body>
+    <div class="header">
+        <div class="menu-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></div>
+        <h1>Admin Pannel</h1>
+    </div>
+    <div class="sidebar" id="sidebar">
+        <a href="adminPannel.html"><i class="fas fa-home"></i> Home</a>
+        <a href="adminPannel.html"><li class="fas fa-user-check"></li> Approved Registration</a>
+        <a href="add.html"><i class="fas fa-user-cog"></i> Add Teacher</a>
+        <a href="/student-teacher-booking-appointment-/student-teacher-booking-appoitment-/src/index.html" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    </div>
+    <div class="content" id="content">
+       
+        <div class="container">
+            <h1>Approved Registrations</h1>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Email</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="user-table"></tbody>
+            </table>
+        </div>
+
+        <h1>Teacher List</h1>
+        <table id="teachersTable">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Subject</th>
+                    <th>Department</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const content = document.getElementById('content');
+            sidebar.classList.toggle('active');
+            content.classList.toggle('active');
+        }
+       
+    </script>
+</body>
+</html>

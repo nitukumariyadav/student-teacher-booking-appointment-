@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <title>Student-Teacher Appointment System</title>
+    <style>
+        /* General Styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            text-align: center;
+            background-image: url('https://cdn.pixabay.com/photo/2014/05/18/19/12/campus-347285_960_720.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Navbar Styles */
+        .navbar {
+            background-color: rgba(0, 0, 0, 0.8);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            transition: background-color 0.3s ease-in-out;
+        }
+
+        .navbar.scroll {
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .navbar .brand {
+            display: flex;
+            align-items: center;
+        }
+
+        .navbar .brand img {
+            height: 40px;
+            margin-right: 10px;
+        }
+
+        .navbar .brand h1 {
+            margin: 0;
+            padding: 0;
+            font-size: 1.5em;
+            color: white;
+        }
+
+        .navbar nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .navbar nav ul li {
+            margin: 0 15px;
+        }
+
+        .navbar nav ul li a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 16px;
+            transition: color 0.3s ease;
+        }
+
+        .navbar nav ul li a:hover {
+            color: #ff9900;
+        }
+
+        /* Content Styles */
+        .content {
+            padding: 40px;
+            width: calc(100% - 250px); /* Adjust for sidebar width */
+            transition: margin-left 0.3s; /* Smooth transition */
+            margin-left: 0; /* Start at zero */
+            margin-top: 80px; /* Adjust for navbar height */
+        }
+
+        .content.active {
+            margin-left: 250px; /* Slide content when sidebar active */
+        }
+
+        form {
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            width: 90%;
+            max-width: 400px;
+            text-align: left;
+        }
+
+        form h2 {
+            margin-bottom: 15px;
+            font-size: 25px;
+            text-align: center;
+        }
+
+        input, textarea, select, button {
+            display: block;
+            margin: 20px 0;
+            padding: 20px;
+            width: calc(100% - 40px); /* Adjust for padding */
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px; /* Adjust font size */
+        }
+
+        button {
+            background-color: #277ff1;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #242524;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .content {
+                width: 100%; /* Full width on smaller screens */
+                margin-left: 0; /* No sidebar on smaller screens */
+            }
+
+            .navbar .brand img {
+                height: 30px; /* Smaller logo size for smaller screens */
+            }
+
+            .navbar .brand h1 {
+                font-size: 1.2em; /* Smaller font size for smaller screens */
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar" id="navbar">
+        <div class="brand">
+            <img src="https://cdn.pixabay.com/photo/2022/03/01/18/54/calendar-7041843_640.png" alt="Logo">
+            <h1>Student-Teacher Booking Appointment</h1>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="search.html">Search</a></li>
+                <li><a href="booking.html">Booking</a></li>
+                <li><a href="send-message.html">Send Message</a></li>
+                <li><a href="login.html">Logout</a></li>
+            </ul>
+        </nav>
+    </div>
+
+    <div class="content">
+        <h2>Send Message</h2>
+        <div class="container">
+            <form id="send-message-form">
+                <select id="teacher-select" required>
+                    <option value="">Select Teacher</option>
+                    <!-- Options will be dynamically populated -->
+                </select>
+                <input type="date" id="message-date" required>
+                <textarea id="message-content" placeholder="Message" required></textarea>
+                <button type="submit">Send</button>
+            </form>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+        import { getAuth, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
+        import { getFirestore, collection, addDoc, getDocs } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBaOf1D2WLOuqHEyPrOV1JRQjfUleEMeyA",
+            authDomain: "student-teacher-appointm-ac387.firebaseapp.com",
+            databaseURL: "https://student-teacher-appointm-ac387-default-rtdb.firebaseio.com",
+            projectId: "student-teacher-appointm-ac387",
+            storageBucket: "student-teacher-appointm-ac387.appspot.com",
+            messagingSenderId: "756780687283",
+            appId: "1:756780687283:web:ebb2944bea32ae21c8b5c6",
+            measurementId: "G-SVZS3TQB11"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth();
+        const db = getFirestore();
+
+        const sendMessageForm = document.getElementById('send-message-form');
+        const teacherSelect = document.getElementById('teacher-select');
+
+        // Function to fetch teachers from Firebase
+        async function fetchTeachers() {
+            const teachersRef = collection(db, 'teachers');
+            const snapshot = await getDocs(teachersRef);
+            snapshot.forEach(doc => {
+                const teacher = doc.data();
+                const option = document.createElement('option');
+                option.value = teacher.email;
+                option.textContent = teacher.name;
+                teacherSelect.appendChild(option);
+            });
+        }
+
+        // Validate Email
+        function validateEmail(email) {
+            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(String(email).toLowerCase());
+        }
+
+        // Send Message
+        sendMessageForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const teacherEmail = teacherSelect.value;
+            const content = document.getElementById('message-content').value;
+            const messageDate = document.getElementById('message-date').value;
+
+            if (!validateEmail(teacherEmail)) {
+                alert('Invalid email format');
+                return;
+            }
+
+            try {
+                await addDoc(collection(db, 'messages'), {
+                    from: auth.currentUser.email,
+                    to: teacherEmail,
+                    content,
+                    date: messageDate,
+                    timestamp: new Date()
+                });
+                alert(`Message sent on ${messageDate}`);
+                sendMessageForm.reset();
+            } catch (error) {
+                console.error('Error sending message: ', error);
+            }
+        });
+
+        // Fetch teachers on page load
+        document.addEventListener('DOMContentLoaded', async () => {
+            await fetchTeachers();
+        });
+    </script>
+</body>
+</html>

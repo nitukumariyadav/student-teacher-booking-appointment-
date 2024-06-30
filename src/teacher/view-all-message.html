@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>View Messages</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f0f0;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 20px auto;
+      padding: 20px;
+      background-color: #fff;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    .message {
+      border-bottom: 1px solid #ccc;
+      padding: 10px 0;
+    }
+
+    .message:last-child {
+      border-bottom: none;
+    }
+
+    .message p {
+      margin: 5px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>All Messages</h1>
+    <div id="messages-list"></div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+    import { getFirestore, collection, getDocs } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+
+    // Initialize Firebase app with your configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyBaOf1D2WLOuqHEyPrOV1JRQjfUleEMeyA",
+            authDomain: "student-teacher-appointm-ac387.firebaseapp.com",
+            databaseURL: "https://student-teacher-appointm-ac387-default-rtdb.firebaseio.com",
+            projectId: "student-teacher-appointm-ac387",
+            storageBucket: "student-teacher-appointm-ac387.appspot.com",
+            messagingSenderId: "756780687283",
+            appId: "1:756780687283:web:ebb2944bea32ae21c8b5c6",
+            measurementId: "G-SVZS3TQB11"
+    };
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    
+    // Reference to the messages collection in Firestore
+    const messagesRef = collection(db, 'messages');
+
+    // Function to fetch and display messages
+    async function fetchMessages() {
+      const querySnapshot = await getDocs(messagesRef);
+      const messagesList = document.getElementById('messages-list');
+
+      // Clear previous content
+      messagesList.innerHTML = '';
+
+      // Loop through messages and display them
+      querySnapshot.forEach((doc) => {
+        const message = doc.data();
+        const messageHtml = `
+          <div class="message">
+            <p><strong>From:</strong> ${message.from}</p>
+            <p><strong>To:</strong> ${message.to}</p>
+            <p><strong>Date:</strong> ${message.date}</p>
+            <p><strong>Content:</strong> ${message.content}</p>
+          </div>
+        `;
+        messagesList.innerHTML += messageHtml;
+      });
+    }
+
+    // Call fetchMessages on page load
+    document.addEventListener('DOMContentLoaded', () => {
+      fetchMessages();
+    });
+  </script>
+</body>
+</html>

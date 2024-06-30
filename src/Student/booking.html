@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <title>Appointment Booking</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            text-align: center;
+            background-image: url('https://cdn.pixabay.com/photo/2014/05/18/19/12/campus-347285_960_720.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        .header {
+            width: 100%;
+            background-color: #0b81e2;
+            color: white;
+            padding: 15px 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            text-align: center;
+            z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        .header h1 {
+            margin: 0;
+            padding: 0;
+            font-size: 1.5em;
+        }
+
+        .header .menu-toggle {
+            position: fixed;
+            top: 10px;
+            left: 20px;
+            cursor: pointer;
+            font-size: 20px;
+            color: white;
+            z-index: 1500;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: transparent;
+            border-radius: 5px;
+        }
+        h2 {
+            margin: 60px;
+            padding: 10px;
+        }
+        .sidebar {
+            height: 100%;
+            width: 250px;
+            position: fixed;
+            top: 0;
+            left: -250px; 
+            background-color: rgba(255, 255, 255, 0.9);
+            padding-top: 50px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            transition: left 0.3s; 
+            z-index: 1200;
+
+        }
+        .sidebar.active {
+            left: 0; 
+        }
+
+        .sidebar a {
+            padding: 10px 15px;
+            text-decoration: none;
+            font-size: 18px;
+            color: #333;
+            display: block;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .sidebar a:hover {
+            background-color: #1085f3;
+            color: white;
+        }
+
+        .sidebar a i {
+            margin-right: 10px;
+        }
+      
+       
+
+        form {
+            margin: 20px auto;
+            padding: 50px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            width: 90%;
+            max-width: 400px;
+            text-align: left;
+        }
+
+        form h2 {
+            margin-bottom: 15px;
+            font-size: 25px;
+            text-align: center;
+        }
+
+        input, select, button {
+            display: block;
+            margin: 20px 0;
+            padding: 20px;
+            width: calc(100% - 40px); 
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            background-color: #277ff1;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #242524;
+        }
+    </style>
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+        import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
+        import { getFirestore, collection, addDoc, getDocs } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBaOf1D2WLOuqHEyPrOV1JRQjfUleEMeyA",
+            authDomain: "student-teacher-appointm-ac387.firebaseapp.com",
+            databaseURL: "https://student-teacher-appointm-ac387-default-rtdb.firebaseio.com",
+            projectId: "student-teacher-appointm-ac387",
+            storageBucket: "student-teacher-appointm-ac387.appspot.com",
+            messagingSenderId: "756780687283",
+            appId: "1:756780687283:web:ebb2944bea32ae21c8b5c6",
+            measurementId: "G-SVZS3TQB11"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth();
+        const db = getFirestore();
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const bookAppointmentForm = document.getElementById('book-appointment-form');
+            const teacherSelect = document.getElementById('teacher-select');
+            const menuToggle = document.getElementById('menu-toggle');
+            const sidebar = document.getElementById('sidebar');
+
+            // Fetch Teachers
+            async function fetchTeachers() {
+                teacherSelect.innerHTML = '<option value="" disabled selected>Select Teacher</option>';
+                const teachersRef = collection(db, 'teachers');
+                const querySnapshot = await getDocs(teachersRef);
+                querySnapshot.forEach((doc) => {
+                    const teacher = doc.data();
+                    const option = document.createElement('option');
+                    option.value = teacher.name; // Set value to teacher's name
+                    option.textContent = teacher.name; // Display teacher's name in the dropdown
+                    teacherSelect.appendChild(option);
+                });
+            }
+
+            // Book Appointment
+            bookAppointmentForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const teacherName = teacherSelect.value; // Get selected teacher's name
+                const appointmentDate = document.getElementById('appointment-date').value;
+                const appointmentTime = document.getElementById('appointment-time').value;
+
+                if (!teacherName) {
+                    alert('Please select a teacher');
+                    return;
+                }
+
+                onAuthStateChanged(auth, async (user) => {
+                    if (user) {
+                        try {
+                            await addDoc(collection(db, 'appointments'), {
+                                teacherName,
+                                studentEmail: user.email,
+                                appointmentDate,
+                                appointmentTime,
+                                status: 'Pending'
+                            });
+                            alert('Appointment booked successfully');
+                            bookAppointmentForm.reset();
+                        } catch (error) {
+                            console.error('Error booking appointment: ', error);
+                            alert('Failed to book appointment. Please try again.');
+                        }
+                    } else {
+                        alert('Please log in to book an appointment');
+                        window.location.href = 'login.html';
+                    }
+                });
+            });
+
+            // Function to toggle sidebar visibility
+            function toggleSidebar() {
+                sidebar.classList.toggle('active');
+            }
+            menuToggle.addEventListener('click', toggleSidebar);
+
+            fetchTeachers(); // Fetch teachers on page load
+        });
+    </script>
+</head>
+<body>
+    <div class="header">
+        <div class="menu-toggle" id="menu-toggle"><i class="fas fa-bars"></i></div>
+        <h1>Student Portal</h1>
+    </div>
+    <div class="sidebar" id="sidebar">
+        <a href="studentHome.html"><i class="fas fa-home"></i>Home</a>
+        <a href="studentHome.html"><i class="fas fa-search"></i>Search</a>
+        <a href="booking.html"><i class="fas fa-calendar-check"></i>Booking</a>
+        <a href="sendMassage.html"><i class="fas fa-envelope"></i>Send Message</a>
+        <a href="login.html"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    </div>
+    <div class="container">
+        <h2>Book Appointment</h2>
+        <form id="book-appointment-form">
+            <select id="teacher-select" required>
+                <option value="" disabled selected>Select Teacher</option>
+            </select>
+            <label for="appointment-date">Select Date:</label>
+            <input type="date" id="appointment-date" required>
+            <label for="appointment-time">Select Time:</label>
+            <input type="time" id="appointment-time" required>
+            <button type="submit">Book</button>
+        </form>
+    </div>
+</body>
+</html>

@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appointment Booking</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            text-align: center;
+            background-image: url('https://cdn.pixabay.com/photo/2014/05/18/19/12/campus-347285_960_720.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        .header {
+            width: 100%;
+            background-color: #0b81e2;
+            color: white;
+            padding: 10px 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            text-align: center;
+            z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        .header h1 {
+            margin: 0;
+            padding: 0;
+            font-size: 1.5em;
+        }
+
+        .header .menu-toggle {
+            left: 10px;
+            top: 15px;
+        }
+
+       
+
+        h2 {
+            background-color: transparent;
+            color: black;
+            padding: 30px;
+            margin: 30px;
+        }
+
+        form {
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            width: 90%;
+            max-width: 400px;
+            text-align: left;
+        }
+
+        form h2 {
+            margin-bottom: 15px;
+            font-size: 25px;
+            text-align: center;
+        }
+
+        input, button {
+            display: block;
+            margin: 20px 0;
+            padding: 20px;
+            width: calc(100% - 40px); 
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            background-color: #277ff1;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #242524;
+        }
+
+        #auth-section {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px;
+        }
+
+        #auth-section > div {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            width: 90%; 
+            max-width: 400px;
+            margin: 20px auto;
+        }
+        .sidebar {
+            height: 100%;
+            width: 250px;
+            position: fixed;
+            top: 0;
+            left: -250px; 
+            background-color: rgba(255, 255, 255, 0.9);
+            padding-top: 60px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            transition: left 0.3s; 
+        }
+        
+        .sidebar.active {
+            left: 0; 
+        }
+
+        .sidebar a {
+            padding: 10px 15px;
+            text-decoration: none;
+            font-size: 18px;
+            color: #333;
+            display: block;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .sidebar a:hover {
+            background-color: #1085f3;
+            color: white;
+        }
+
+        .sidebar a i {
+            margin-right: 10px;
+        }
+        .menu-toggle {
+            position: fixed;
+            top: 5px;
+            left: 20px;
+            cursor: pointer;
+            font-size: 20px;
+        }
+
+    </style>
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
+        import { getFirestore, doc, setDoc } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBaOf1D2WLOuqHEyPrOV1JRQjfUleEMeyA",
+            authDomain: "student-teacher-appointm-ac387.firebaseapp.com",
+            databaseURL: "https://student-teacher-appointm-ac387-default-rtdb.firebaseio.com",
+            projectId: "student-teacher-appointm-ac387",
+            storageBucket: "student-teacher-appointm-ac387.appspot.com",
+            messagingSenderId: "756780687283",
+            appId: "1:756780687283:web:ebb2944bea32ae21c8b5c6",
+            measurementId: "G-SVZS3TQB11"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth();
+        const db = getFirestore();
+
+        document.getElementById('register-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('register-email').value;
+            const password = document.getElementById('register-password').value;
+
+            try {
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                await setDoc(doc(db, 'users', userCredential.user.uid), { email, role: 'student' });
+                alert('Registration successful');
+                document.getElementById('register-form').reset();
+            } catch (error) {
+                console.error('Error registering: ', error);
+            }
+        });
+
+        // Login
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+
+            try {
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                console.log('User logged in: ', userCredential.user.uid);
+                alert('Login successful');
+                window.location.href = 'studentHome.html';
+            } catch (error) {
+                console.error('Error logging in: ', error);
+            }
+        });
+        function logout() {
+            window.location.href = 'src/index.html'; 
+        }
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const content = document.getElementById('content'); 
+            sidebar.classList.toggle('active');
+            content.classList.toggle('active'); 
+        }
+        document.getElementById('menu-toggle').addEventListener('click', toggleSidebar);
+    </script>
+</head>
+<body>
+    <div class="header">
+        <div class="menu-toggle" id="menu-toggle"><i class="fas fa-bars"></i></div>
+        <h1>Student Pannel</h1>
+    </div>
+    <div class="sidebar" id="sidebar">
+      
+        <a href="/student-teacher-booking-appointment-/student-teacher-booking-appoitment-/src/index.html"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    </div>
+    <h2>Student Login and Register</h2>
+    <div id="auth-section">
+        <div>
+            <h2 id="register">Register</h2>
+            <form id="register-form">
+                <input type="text" id="register-email" placeholder="Email" required>
+                <input type="password" id="register-password" placeholder="Password" required>
+                <button type="submit">Register</button>
+            </form>
+        </div>
+        <div>
+            <h2 id="login">Login</h2>
+            <form id="login-form">
+                <input type="text" id="login-email" placeholder="Email" required>
+                <input type="password" id="login-password" placeholder="Password" required>
+                <button type="submit">Login</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
